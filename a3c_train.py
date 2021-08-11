@@ -71,7 +71,7 @@ def train(rank, args, shared_model):
             entropy = -(log_prob * prob).sum(1)
             entropies.append(entropy)
 
-            action = prob.multinomial().data
+            action = prob.multinomial(num_samples=1).data
 
             log_prob = log_prob.gather(1, Variable(action))
 
@@ -141,7 +141,7 @@ def train(rank, args, shared_model):
             v_losses = []
 
         (policy_loss + 0.5 * value_loss).backward()
-        torch.nn.utils.clip_grad_norm(model.parameters(), 40)
+        torch.nn.utils.clip_grad_norm_(model.parameters(), 40)
 
         ensure_shared_grads(model, shared_model)
         optimizer.step()
